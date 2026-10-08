@@ -13,7 +13,7 @@ services:
       - web
 
   web:
-    image: ${IMAGE_NAME:-ghcr.io/itskeimy/test_task_first}:latest
+    image: ${IMAGE_NAME:-ghcr.io/itskeimy/test_task_first:latest}
     container_name: test_task_first_web
     restart: unless-stopped
     expose:
@@ -21,6 +21,7 @@ services:
     environment:
       - PORT=8099
       - ALLOWED_HOSTS=*
+      - DEBUG=False
       - PYTHONUNBUFFERED=1
     volumes:
       - app_data:/app/data
