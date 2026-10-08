@@ -84,10 +84,10 @@ jobs:
           # Create destination directory on VPS
           ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" "mkdir -p ~/test_task_first"
 
-          # Copy docker-compose.yml to VPS
-          scp -o StrictHostKeyChecking=no -P "$SSH_PORT" -i ~/.ssh/id_ed25519 docker-compose.yml "$SSH_USER@$SSH_HOST:~/test_task_first/docker-compose.yml"
+          # Copy configuration files to VPS
+          scp -o StrictHostKeyChecking=no -P "$SSH_PORT" -i ~/.ssh/id_ed25519 docker-compose.yml nginx.conf "$SSH_USER@$SSH_HOST:~/test_task_first/"
 
-          # Authenticate with GHCR, pull updated layers and restart container
+          # Authenticate with GHCR, pull updated layers and restart containers
           ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" bash << EOF
             set -e
             cd ~/test_task_first
@@ -98,14 +98,14 @@ jobs:
             # Export image name for docker-compose
             export IMAGE_NAME="$IMAGE_NAME"
 
-            # Pull only changed image layers
-            docker compose pull web
+            # Pull images
+            docker compose pull web nginx
 
-            # Restart the service (gunicorn on port 8099, 1 worker, 4 threads)
-            docker compose up -d --remove-orphans web
+            # Restart services with Nginx bound to 127.0.0.1:8099
+            docker compose up -d --remove-orphans nginx web
 
             # Prune dangling/unused docker images on VPS to save disk space
             docker image prune -f
 
-            echo "Deployment completed successfully! Site is running on port 8099."
+            echo "Deployment completed successfully! Nginx is serving statics on 127.0.0.1:8099."
           EOF

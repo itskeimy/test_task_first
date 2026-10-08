@@ -2,7 +2,8 @@ FROM python:3.14-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PORT=8099
+    PORT=8099 \
+    PATH="/app/.venv/bin:$PATH"
 
 WORKDIR /app
 
