@@ -1,0 +1,111 @@
+name: Build and Deploy to VPS
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    name: Build & Push Docker Image to GHCR
+    runs-on: ubuntu-latest
+    outputs:
+      image_name: ${{ steps.prep.outputs.image_name }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Prepare image metadata
+        id: prep
+        run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE="ghcr.io/${REPO_LOWER}:latest"
+          echo "image_name=${IMAGE}" >> "$GITHUB_OUTPUT"
+          echo "repo_lower=${REPO_LOWER}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build & push with GitHub Actions layer cache (no full image re-upload)
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.prep.outputs.image_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Disable history / clean up untagged & older images in GHCR to save storage limits
+      - name: Cleanup old and untagged GHCR images
+        uses: dataaxiom/ghcr-cleanup-action@v1
+        continue-on-error: true
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          delete-untagged: true
+          keep-n-tagged: 1
+
+  deploy:
+    name: Deploy to VPS
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy application to VPS via SSH
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          IMAGE_NAME: ${{ needs.build-and-push.outputs.image_name }}
+          ACTOR: ${{ github.actor }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Setup SSH configuration
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          # Create destination directory on VPS
+          ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" "mkdir -p ~/test_task_first"
+
+          # Copy docker-compose.yml to VPS
+          scp -o StrictHostKeyChecking=no -P "$SSH_PORT" -i ~/.ssh/id_ed25519 docker-compose.yml "$SSH_USER@$SSH_HOST:~/test_task_first/docker-compose.yml"
+
+          # Authenticate with GHCR, pull updated layers and restart container
+          ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" bash << EOF
+            set -e
+            cd ~/test_task_first
+
+            # Authenticate to GHCR on VPS
+            echo "$GH_TOKEN" | docker login ghcr.io -u "$ACTOR" --password-stdin
+
+            # Export image name for docker-compose
+            export IMAGE_NAME="$IMAGE_NAME"
+
+            # Pull only changed image layers
+            docker compose pull web
+
+            # Restart the service (gunicorn on port 8099, 1 worker, 4 threads)
+            docker compose up -d --remove-orphans web
+
+            # Prune dangling/unused docker images on VPS to save disk space
+            docker image prune -f
+
+            echo "Deployment completed successfully! Site is running on port 8099."
+          EOF

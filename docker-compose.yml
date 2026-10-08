@@ -1,0 +1,30 @@
+services:
+  web:
+    image: ${IMAGE_NAME:-ghcr.io/itskeimy/test_task_first:latest}
+    container_name: test_task_first_web
+    restart: unless-stopped
+    ports:
+      - "8099:8099"
+    environment:
+      - PORT=8099
+      - ALLOWED_HOSTS=*
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - app_data:/app/data
+
+  db:
+    image: postgres:17-alpine
+    container_name: test_task_first_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: test_task_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+    ports:
+      - "${DB_PORT:-8195}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+  app_data:
