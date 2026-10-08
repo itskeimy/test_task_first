@@ -12,16 +12,25 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load .env file from the project root directory
+env_path = BASE_DIR / '.env'
+if not env_path.exists():
+    env_path = BASE_DIR / '.env.example'
+load_dotenv(env_path)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-u4@h(@c1qolr+c5_rokaj!n2oc7p$wp^00_i)_!f9ga@j@mn2x'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
@@ -38,7 +47,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'accounts',
+    'receipts'
 ]
+
+AUTH_USER_MODEL = 'accounts.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -81,8 +95,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
     }
 }
 
@@ -111,7 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.environ.get('TIME_ZONE')
 
 USE_I18N = True
 
@@ -136,3 +154,7 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+PROMO_START_DATE = os.environ.get('PROMO_START_DATE')
+PROMO_END_DATE = os.environ.get('PROMO_END_DATE')
+MIN_AMOUNT = os.environ.get('MIN_AMOUNT')
