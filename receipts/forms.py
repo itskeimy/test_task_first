@@ -1,10 +1,10 @@
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timedelta
 from django import forms
 from django.conf import settings
 from django.utils import timezone
 from .models import Receipt
-from .utils import get_promo_config
+from .utils import get_promo_config, RUSSIA_MAX_TZ_OFFSET_HOURS
 
 
 class ReceiptCreateForm(forms.ModelForm):
@@ -79,19 +79,24 @@ class ReceiptCreateForm(forms.ModelForm):
         if not purchase_date:
             return purchase_date
 
-        # Проверка: чек не может быть из будущего
+        # 1. Проверка на будущее время с учетом часовых поясов РФ:
+        # Самый восточный пояс (Камчатка UTC+12) опережает сервер (Europe/Moscow UTC+3) на 9 часов.
+        # Чек не может быть выбит позже времени, которое наступило в самой дальней точке страны.
         now = timezone.now() if timezone.is_aware(purchase_date) else datetime.now()
-        if purchase_date > now:
+        max_allowed_time = now + timedelta(hours=RUSSIA_MAX_TZ_OFFSET_HOURS)
+        if purchase_date > max_allowed_time:
             raise forms.ValidationError('Дата покупки не может быть в будущем.')
 
+        # 2. Проверка периода акции по местному календарному дню:
+        # Кассовый чек по 54-ФЗ печатает локальное время кассы без таймзоны.
+        # Проверяем, что календарный день покупки входит в диапазон акции (с start_date по end_date).
         promo = get_promo_config()
         if promo['start_dt'] and promo['end_dt']:
-            check_date = purchase_date
-            if not timezone.is_aware(check_date):
-                tz = timezone.get_current_timezone()
-                check_date = timezone.make_aware(check_date, tz)
+            purchase_day = purchase_date.date()
+            promo_start_day = promo['start_dt'].date()
+            promo_end_day = promo['end_dt'].date()
 
-            if not (promo['start_dt'] <= check_date <= promo['end_dt']):
+            if not (promo_start_day <= purchase_day <= promo_end_day):
                 raise forms.ValidationError(
                     f'Чек должен быть оформлен в период акции '
                     f'(с {promo["start_display"]} по {promo["end_display"]}).'

@@ -413,7 +413,7 @@ function validateField(input) {
             if (dateObj.getFullYear() !== year || dateObj.getMonth() !== month - 1 || dateObj.getDate() !== day) {
               isValid = false;
               errorMsg = 'Ошибка! Такой даты в календаре не существует';
-            } else if (dateObj > new Date()) {
+            } else if (dateObj > new Date(Date.now() + 9 * 3600 * 1000)) {
               isValid = false;
               errorMsg = 'Ошибка! Дата чека не может быть в будущем';
             }

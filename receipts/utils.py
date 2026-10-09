@@ -5,6 +5,9 @@ from django.utils import timezone
 
 # Пагинация по ТЗ: ровно 10 чеков на страницу
 RECEIPTS_PER_PAGE = 10
+# Разница между сервером (Europe/Moscow, UTC+3) и самым восточным поясом РФ (Камчатка UTC+12): 12 - 3 = 9 часов
+RUSSIA_MAX_TZ_OFFSET_HOURS = 9
+RISSIA_MAX_TZ_OFFSET = 9
 
 
 def get_promo_config():
@@ -55,3 +58,12 @@ def get_promo_config():
         'end_iso': raw_end or '',
         'min_amount': min_amount,
     }
+
+def clean_purchase_date_for_russia(self):
+    purchase_date = self.cleaned_data.get('purchase_date')
+    if not purchase_date:
+        return purchase_date
+    
+    
+
+    
