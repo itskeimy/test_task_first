@@ -172,6 +172,12 @@ input, button, select, textarea {
   font-size: 16px;
   font-weight: 500;
   color: var(--color-text-main);
+  background: transparent;
+  border: 1px solid transparent;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  box-sizing: border-box;
   transition: var(--transition-fast);
 }
 
@@ -909,6 +915,14 @@ input, button, select, textarea {
     white-space: nowrap;
     flex-shrink: 0;
     border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-white);
+  }
+  .nav-item.active {
+    background: var(--color-bg-page);
+    border-color: #CBD5E1;
+    color: var(--color-text-title);
+    font-weight: 600;
   }
   .nav-item img {
     width: 15px;

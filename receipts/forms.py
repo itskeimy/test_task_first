@@ -48,12 +48,16 @@ class ReceiptCreateForm(forms.ModelForm):
         fd = self.cleaned_data.get('fd', '').strip()
         if not fd.isdigit():
             raise forms.ValidationError('ФД должен состоять только из цифр.')
+        if len(fd) > 10:
+            raise forms.ValidationError('ФД не может быть длиннее 10 цифр.')
         return fd
 
     def clean_fp(self):
         fp = self.cleaned_data.get('fp', '').strip()
         if not fp.isdigit():
             raise forms.ValidationError('ФП должен состоять только из цифр.')
+        if len(fp) > 10:
+            raise forms.ValidationError('ФП не может быть длиннее 10 цифр.')
         return fp
 
     def clean_total_amount(self):
@@ -82,9 +86,10 @@ class ReceiptCreateForm(forms.ModelForm):
         # 1. Проверка на будущее время с учетом часовых поясов РФ:
         # Самый восточный пояс (Камчатка UTC+12) опережает сервер (Europe/Moscow UTC+3) на 9 часов.
         # Чек не может быть выбит позже времени, которое наступило в самой дальней точке страны.
-        now = timezone.now() if timezone.is_aware(purchase_date) else datetime.now()
+        now = timezone.localtime(timezone.now()) if timezone.is_aware(purchase_date) else datetime.now()
         max_allowed_time = now + timedelta(hours=RUSSIA_MAX_TZ_OFFSET_HOURS)
-        if purchase_date > max_allowed_time:
+        check_date = timezone.localtime(purchase_date) if timezone.is_aware(purchase_date) else purchase_date
+        if check_date > max_allowed_time:
             raise forms.ValidationError('Дата покупки не может быть в будущем.')
 
         # 2. Проверка периода акции по местному календарному дню:
