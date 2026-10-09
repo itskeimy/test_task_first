@@ -70,8 +70,8 @@
               <img src="{% static 'icons/nav-profile.svg' %}" alt="" width="16" height="16">
               <span>Панель модератора</span>
             </a>
-            {% endif %}
             <div class="dropdown-divider"></div>
+            {% endif %}
             <form action="{% url 'accounts:logout' %}" method="post" style="margin: 0;">
               {% csrf_token %}
               <button type="submit" class="dropdown-item dropdown-item--logout" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer; font-family: inherit;">
