@@ -3,6 +3,12 @@
 
 {% block title %}Личный кабинет — История чеков{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cabinet.css' %}">
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+<link rel="stylesheet" href="{% static 'css/modal.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="cabinet-card">
 
@@ -177,4 +183,11 @@
 {% block modals %}
   {% include 'receipts/includes/modal_register.html' %}
   {% include 'receipts/includes/modal_success.html' %}
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/modal.js' %}"></script>
+  <script src="{% static 'js/qr-parser.js' %}"></script>
+  <script src="{% static 'js/receipt-form.js' %}"></script>
+  <script src="{% static 'js/table-sort.js' %}"></script>
 {% endblock %}
