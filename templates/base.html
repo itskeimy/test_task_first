@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Личный кабинет — Чек на удачу{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <div class="page-container">
+
+    <!-- Header (Шапка) -->
+    <header class="site-header">
+      <div class="header-left">
+        <a href="{% url 'receipts:cabinet' %}" class="header-logo" title="Чек на удачу">Чек на удачу</a>
+        <a href="{% url 'receipts:cabinet' %}" class="header-back-link">
+          <img src="{% static 'icons/arrow-left.svg' %}" alt="" width="16" height="16">
+          <span>Главная</span>
+        </a>
+      </div>
+
+      <!-- Center Navigation -->
+      <nav class="header-nav" aria-label="Основная навигация">
+        <a href="{% url 'receipts:cabinet' %}" class="nav-item active">
+          <img src="{% static 'icons/nav-home.svg' %}" alt="" width="16" height="16">
+          <span>Личный кабинет</span>
+        </a>
+        <button type="button" class="nav-item js-open-register-modal" style="background:none;border:none;cursor:pointer;font-family:inherit;">
+          <img src="{% static 'icons/btn-receipt.svg' %}" alt="" width="16" height="16">
+          <span>Зарегистрировать чек</span>
+        </button>
+        {% if user.is_staff %}
+        <a href="/admin/" class="nav-item" target="_blank">
+          <img src="{% static 'icons/icon-info.svg' %}" alt="" width="16" height="16">
+          <span>Админка</span>
+        </a>
+        {% endif %}
+      </nav>
+
+      <!-- Right Block: Bell & User Info -->
+      <div class="header-right">
+        <button type="button" class="notification-btn" aria-label="Уведомления">
+          <img src="{% static 'icons/bell.svg' %}" alt="Колокольчик" width="20" height="20">
+          <span class="notification-dot"></span>
+        </button>
+
+        {% if user.is_authenticated %}
+        <div class="user-profile" id="userProfileTrigger" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false">
+          <img src="{% static 'images/avatar.png' %}" alt="{{ user.username }}" class="user-avatar" width="40" height="40">
+          <div class="user-info">
+            <span class="user-name">{{ user.username }}</span>
+            <span class="user-email">{{ user.email|default:"Участник акции" }}</span>
+          </div>
+        </div>
+
+        <!-- Dropdown Menu -->
+        <div class="profile-dropdown" id="profileDropdown" role="menu">
+          <div class="dropdown-user-header">
+            <div class="dropdown-user-name">{{ user.username }}</div>
+            <div class="dropdown-user-email">{{ user.email|default:"Участник акции" }}</div>
+          </div>
+          <div class="dropdown-menu-list">
+            {% if user.is_staff %}
+            <a href="/admin/" class="dropdown-item" role="menuitem">
+              <img src="{% static 'icons/nav-profile.svg' %}" alt="" width="16" height="16">
+              <span>Панель модератора</span>
+            </a>
+            {% endif %}
+            <div class="dropdown-divider"></div>
+            <form action="{% url 'accounts:logout' %}" method="post" style="margin: 0;">
+              {% csrf_token %}
+              <button type="submit" class="dropdown-item dropdown-item--logout" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer; font-family: inherit;">
+                <img src="{% static 'icons/status-error.svg' %}" alt="" width="20" height="20">
+                <span>Выйти</span>
+              </button>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <div style="display: flex; gap: 8px;">
+          <a href="{% url 'accounts:login' %}" class="btn-submit-upload" style="padding: 8px 16px; font-size: 14px; text-decoration: none;">Войти</a>
+          <a href="{% url 'accounts:register' %}" class="btn-to-main" style="padding: 8px 16px; font-size: 14px; text-decoration: none;">Регистрация</a>
+        </div>
+        {% endif %}
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      {% if messages %}
+      <div style="max-width: 1280px; margin: 0 auto 16px auto; width: 100%;">
+        {% for message in messages %}
+        <div style="padding: 12px 16px; border-radius: 12px; margin-bottom: 8px; font-size: 14px; {% if message.tags == 'error' %}background:#FEE2E2; color:#991B1B; border:1px solid #F87171;{% else %}background:#DCFCE7; color:#166534; border:1px solid #86EFAC;{% endif %}">
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  {% block modals %}{% endblock %}
+
+  <script>
+    window.STATIC_URL = "{% static '' %}";
+  </script>
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% load static %}
+<!-- Empty State Container -->
+<div class="empty-state">
+  <img src="{% static 'images/empty-receipt.png' %}" alt="Чек с вопросительными знаками" class="empty-state__image" width="240">
+  <h2 class="empty-state__title">Здесь будет история ваших чеков</h2>
+  <p class="empty-state__subtitle">Вы не добавили еще ни одного чека</p>
+
+  <button type="button" class="btn-primary-register js-open-register-modal">
+    <img src="{% static 'icons/btn-receipt.svg' %}" alt="" width="20" height="20">
+    <span>Зарегистрировать чек</span>
+  </button>
+</div>

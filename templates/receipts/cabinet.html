@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Личный кабинет — История чеков{% endblock %}
+
+{% block content %}
+<div class="cabinet-card">
+
+  <!-- Top Header of the Card -->
+  <div class="cabinet-card__header">
+    <h1 class="cabinet-card__title">История чеков</h1>
+    <div class="receipts-badge">
+      <span>Чеков внесено:</span>
+      <span class="receipts-badge__count">{{ page_obj.paginator.count|default:0 }} шт.</span>
+    </div>
+  </div>
+
+  {% if receipts %}
+  <!-- Table Container -->
+  <div class="table-responsive">
+    <table class="receipts-table">
+      <thead>
+        <tr>
+          <th data-sort data-col="0">
+            <span class="th-sort-btn">
+              Дата покупки
+              <img src="{% static 'icons/sort-table.svg' %}" alt="" width="16" height="16">
+            </span>
+          </th>
+          <th data-sort data-col="1">
+            <span class="th-sort-btn">
+              Статус
+              <img src="{% static 'icons/sort-down.svg' %}" alt="" width="16" height="16">
+            </span>
+          </th>
+          <th data-sort data-col="2">
+            <span class="th-sort-btn">
+              Сумма чека
+              <img src="{% static 'icons/sort-up.svg' %}" alt="" width="16" height="16">
+            </span>
+          </th>
+          <th data-sort data-col="3">
+            <span class="th-sort-btn">
+              Дата регистрации
+              <img src="{% static 'icons/sort-up.svg' %}" alt="" width="16" height="16">
+            </span>
+          </th>
+          <th data-sort data-col="4">
+            <span class="th-sort-btn">
+              Информация
+              <img src="{% static 'icons/sort-table.svg' %}" alt="" width="16" height="16">
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for receipt in receipts %}
+        <tr>
+          <td>
+            <div class="td-date-purchase">
+              <img src="{% static 'images/qr-code.png' %}" alt="QR" class="qr-icon" width="24" height="24">
+              <span>{{ receipt.purchase_date|date:"H:i d.m.Y" }}</span>
+            </div>
+          </td>
+          <td>
+            {% if receipt.status == 'pending' %}
+            <span class="status-badge status-badge--pending">
+              <img src="{% static 'icons/status-clock.svg' %}" alt="" width="20" height="20">
+              На проверке
+            </span>
+            {% elif receipt.status == 'approved' %}
+            <span class="status-badge status-badge--success">
+              <img src="{% static 'icons/status-check.svg' %}" alt="" width="20" height="20">
+              Принят
+            </span>
+            {% elif receipt.status == 'rejected' %}
+            <span class="status-badge status-badge--error">
+              <img src="{% static 'icons/status-error.svg' %}" alt="" width="20" height="20">
+              Отклонен
+            </span>
+            {% else %}
+            <span class="status-badge">
+              {{ receipt.get_status_display }}
+            </span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="td-sum">
+              <img src="{% static 'icons/icon-money.svg' %}" alt="" width="18" height="18">
+              <span>{{ receipt.total_amount }} ₽</span>
+            </div>
+          </td>
+          <td>
+            <div class="td-reg-date">
+              <img src="{% static 'icons/icon-calendar.svg' %}" alt="" width="18" height="18">
+              <span>{{ receipt.created_at|date:"H:i d.m.Y" }}</span>
+            </div>
+          </td>
+          <td>
+            {% if receipt.status == 'rejected' %}
+            <div class="td-info" style="color: #EF4C4C;">
+              <img src="{% static 'icons/icon-danger.svg' %}" alt="" width="18" height="18">
+              <span>{{ receipt.reject_reason|default:"Причина не указана" }}</span>
+            </div>
+            {% elif receipt.status == 'pending' %}
+            <div class="td-info">
+              <img src="{% static 'icons/icon-info.svg' %}" alt="" width="18" height="18">
+              <span>Чек проверяется модератором</span>
+            </div>
+            {% elif receipt.status == 'approved' %}
+            <div class="td-info" style="color: #10B981;">
+              <img src="{% static 'icons/status-check.svg' %}" alt="" width="18" height="18">
+              <span>Чек успешно принят</span>
+            </div>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination по 10 чеков по ТЗ -->
+  {% if is_paginated %}
+  <nav class="pagination" aria-label="Пагинация таблицы">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="page-btn page-arrow" aria-label="Предыдущая страница">
+      <img src="{% static 'icons/page-arrow-left.svg' %}" alt="◀" width="14" height="14">
+    </a>
+    {% else %}
+    <button type="button" class="page-btn page-arrow" disabled style="opacity: 0.4; cursor: not-allowed;">
+      <img src="{% static 'icons/page-arrow-left.svg' %}" alt="◀" width="14" height="14">
+    </button>
+    {% endif %}
+
+    {% for p in paginator.page_range %}
+      {% if page_obj.number == p %}
+      <span class="page-btn active">{{ p }}</span>
+      {% elif p >= page_obj.number|add:"-2" and p <= page_obj.number|add:"2" %}
+      <a href="?page={{ p }}" class="page-btn">{{ p }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="page-btn page-arrow" aria-label="Следующая страница">
+      <img src="{% static 'icons/page-arrow-right.svg' %}" alt="▶" width="14" height="14">
+    </a>
+    {% else %}
+    <button type="button" class="page-btn page-arrow" disabled style="opacity: 0.4; cursor: not-allowed;">
+      <img src="{% static 'icons/page-arrow-right.svg' %}" alt="▶" width="14" height="14">
+    </button>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  <!-- Bottom Footer Bar: Notice & Register Button -->
+  <div class="cabinet-footer-bar">
+    <div class="notice-banner">
+      <img src="{% static 'icons/icon-info-blue.svg' %}" alt="Информация" width="22" height="22">
+      <span>Иногда проверка вашего чека модератором может занять до 5 рабочих дней</span>
+    </div>
+
+    <button type="button" class="btn-primary-register js-open-register-modal">
+      <img src="{% static 'icons/btn-receipt.svg' %}" alt="" width="20" height="20">
+      <span>Зарегистрировать чек</span>
+    </button>
+  </div>
+
+  {% else %}
+    <!-- Если чеков еще нет, показываем пустое состояние -->
+    {% include 'receipts/includes/empty_state.html' %}
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block modals %}
+  {% include 'receipts/includes/modal_register.html' %}
+  {% include 'receipts/includes/modal_success.html' %}
+{% endblock %}

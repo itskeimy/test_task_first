@@ -7,15 +7,28 @@ from .models import Receipt
 
 
 class ReceiptCreateForm(forms.ModelForm):
+    purchase_date = forms.DateTimeField(
+        input_formats=[
+            '%d.%m.%Y %H:%M',
+            '%d.%m.%Y',
+            '%Y-%m-%dT%H:%M',
+            '%Y-%m-%d %H:%M:%S',
+            '%Y-%m-%d %H:%M'
+        ]
+    )
+
+    total_amount = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'placeholder': '1 000.00 ₽', 'class': 'form-input'}
+        )
+    )
+
     class Meta:
         model = Receipt
         fields = ('fn', 'fd', 'fp', 'purchase_date', 'total_amount')
         widgets = {
-            'purchase_date': forms.DateTimeInput(
-                attrs={'type': 'datetime-local', 'class': 'form-control'}
-            ),
-            'total_amount': forms.NumberInput(
-                attrs={'step': '0.01', 'min': '1000.00', 'placeholder': '1000.00'}
+            'purchase_date': forms.TextInput(
+                attrs={'placeholder': 'дд.мм.гггг чч:мм', 'class': 'form-input'}
             ),
             'fn': forms.TextInput(attrs={'placeholder': '16 цифр'}),
             'fd': forms.TextInput(attrs={'placeholder': 'номер ФД'}),
@@ -43,10 +56,18 @@ class ReceiptCreateForm(forms.ModelForm):
         return fp
 
     def clean_total_amount(self):
-        amount = self.cleaned_data.get('total_amount')
-        min_amount = Decimal(str(getattr(settings, 'MIN_AMOUNT', '1000.00')))
+        raw_val = self.cleaned_data.get('total_amount', '')
+        if isinstance(raw_val, (int, float, Decimal)):
+            amount = Decimal(str(raw_val))
+        else:
+            clean_str = str(raw_val).replace('₽', '').replace(' ', '').replace('\xa0', '').replace(',', '.').strip()
+            try:
+                amount = Decimal(clean_str)
+            except Exception:
+                raise forms.ValidationError('Введите корректную сумму чека (например, 1000.00).')
 
-        if amount is not None and amount < min_amount:
+        min_amount = Decimal(str(getattr(settings, 'MIN_AMOUNT', '1000.00')))
+        if amount < min_amount:
             raise forms.ValidationError(
                 f'Сумма чека для участия в акции должна быть не менее {min_amount} ₽.'
             )

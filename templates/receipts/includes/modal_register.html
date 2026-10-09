@@ -1,0 +1,118 @@
+{% load static %}
+<!-- ============================================== -->
+<!-- MODAL: Регистрация чека                        -->
+<!-- ============================================== -->
+<div class="modal-overlay" id="registerModal" role="dialog" aria-modal="true" aria-labelledby="registerModalTitle">
+  <div class="modal-card">
+    <button type="button" class="modal-close-btn js-close-modal" aria-label="Закрыть модальное окно">
+      <img src="{% static 'icons/modal-close.svg' %}" alt="✕" width="28" height="28">
+    </button>
+
+    <div class="modal-header">
+      <h2 class="modal-title" id="registerModalTitle">Регистрация чека</h2>
+      <p class="modal-subtitle">
+        Период акции: <strong>{{ promo_start_display|default:"01.09.2026" }} — {{ promo_end_display|default:"31.12.2026" }}</strong>.<br>
+        Минимальная сумма покупки — <strong>{{ min_amount|default:"1000.00" }} ₽</strong>.
+      </p>
+    </div>
+
+    <!-- Общий баннер серверной ошибки -->
+    <div id="formGeneralError" style="display:none; padding:10px 14px; background:#FEE2E2; color:#991B1B; border:1px solid #F87171; border-radius:10px; font-size:13px; margin-bottom:16px;"></div>
+
+    <!-- Бонусное поле: Вставить строку из QR-кода -->
+    <div class="form-group" style="background:#F8FAFC; border:1px dashed #CBD5E1; border-radius:12px; padding:12px; margin-bottom:16px;">
+      <label class="form-label" for="inputQRString" style="color:#475569; font-weight:600; display:flex; align-items:center; gap:6px;">
+        <img src="{% static 'images/qr-code.png' %}" alt="QR" width="16" height="16">
+        <span>Быстрое заполнение: вставьте строку из QR-кода</span>
+      </label>
+      <div class="input-wrapper">
+        <input type="text" id="inputQRString" class="form-input" placeholder="t=20261015T1430&s=1550.00&fn=9999078900012345&i=12345&fp=9876543210..." autocomplete="off">
+        <button type="button" class="input-clear-btn" aria-label="Очистить поле">×</button>
+      </div>
+      <div style="font-size:11px; color:#64748B; margin-top:4px;">Вставьте строку из сканера камеры смартфона — поля ниже заполнятся автоматически!</div>
+    </div>
+
+    <form class="register-form" id="receiptForm" action="{% url 'receipts:register' %}" method="post" novalidate
+          data-promo-start="{{ promo_start_iso }}"
+          data-promo-end="{{ promo_end_iso }}"
+          data-min-amount="{{ min_amount|default:'1000.00' }}">
+      {% csrf_token %}
+
+      <!-- ФН -->
+      <div class="form-group">
+        <label class="form-label" for="inputFN">ФН (Фискальный накопитель)</label>
+        <div class="input-wrapper">
+          <input type="text" name="fn" id="inputFN" class="form-input" placeholder="16 цифр с чека" required maxlength="20" autocomplete="off">
+          <button type="button" class="input-clear-btn" aria-label="Очистить поле">×</button>
+          <span class="input-star">*</span>
+        </div>
+        <div class="error-tooltip" id="error_fn">
+          <img src="{% static 'icons/icon-danger.svg' %}" alt="" width="16" height="16">
+          <span class="error-tooltip-text">ФН должен содержать ровно 16 цифр</span>
+        </div>
+      </div>
+
+      <!-- Номер чека (ФД) -->
+      <div class="form-group">
+        <label class="form-label" for="inputFD">Номер чека (ФД)</label>
+        <div class="input-wrapper">
+          <input type="text" name="fd" id="inputFD" class="form-input" placeholder="Номер фискального документа" required maxlength="10" autocomplete="off">
+          <button type="button" class="input-clear-btn" aria-label="Очистить поле">×</button>
+          <span class="input-star">*</span>
+        </div>
+        <div class="error-tooltip" id="error_fd">
+          <img src="{% static 'icons/icon-danger.svg' %}" alt="" width="16" height="16">
+          <span class="error-tooltip-text">Укажите номер ФД (только цифры)</span>
+        </div>
+      </div>
+
+      <!-- ФП -->
+      <div class="form-group">
+        <label class="form-label" for="inputFP">ФП (Фискальный признак)</label>
+        <div class="input-wrapper">
+          <input type="text" name="fp" id="inputFP" class="form-input" placeholder="Фискальный признак документа" required maxlength="10" autocomplete="off">
+          <button type="button" class="input-clear-btn" aria-label="Очистить поле">×</button>
+          <span class="input-star">*</span>
+        </div>
+        <div class="error-tooltip" id="error_fp">
+          <img src="{% static 'icons/icon-danger.svg' %}" alt="" width="16" height="16">
+          <span class="error-tooltip-text">Укажите номер ФП (до 10 цифр)</span>
+        </div>
+      </div>
+
+      <!-- Дата покупки -->
+      <div class="form-group">
+        <label class="form-label" for="inputDate">Дата покупки</label>
+        <div class="input-wrapper">
+          <input type="text" name="purchase_date" id="inputDate" class="form-input" placeholder="дд.мм.гггг чч:мм" required maxlength="16" autocomplete="off">
+          <img src="{% static 'icons/icon-calendar.svg' %}" alt="Календарь" class="input-icon-right" width="18" height="18">
+          <button type="button" class="input-clear-btn" aria-label="Очистить поле">×</button>
+          <span class="input-star">*</span>
+        </div>
+        <div class="error-tooltip" id="error_purchase_date">
+          <img src="{% static 'icons/icon-danger.svg' %}" alt="" width="16" height="16">
+          <span class="error-tooltip-text">Дата покупки должна входить в период акции</span>
+        </div>
+      </div>
+
+      <!-- Сумма -->
+      <div class="form-group">
+        <label class="form-label" for="inputSum">Сумма</label>
+        <div class="input-wrapper">
+          <input type="text" name="total_amount" id="inputSum" class="form-input" placeholder="1 000.00 ₽" required autocomplete="off">
+          <button type="button" class="input-clear-btn" aria-label="Очистить поле">×</button>
+          <span class="input-star">*</span>
+        </div>
+        <div class="error-tooltip" id="error_total_amount">
+          <img src="{% static 'icons/icon-danger.svg' %}" alt="" width="16" height="16">
+          <span class="error-tooltip-text">Сумма чека должна быть не менее 1000 ₽</span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit-upload" id="submitReceiptBtn">
+        <span class="btn-text">Зарегистрировать чек</span>
+        <span class="btn-spinner" style="display:none;">Отправка...</span>
+      </button>
+    </form>
+  </div>
+</div>

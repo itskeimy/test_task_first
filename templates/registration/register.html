@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Регистрация — Чек на удачу{% endblock %}
+
+{% block content %}
+<div class="cabinet-card auth-card">
+  <div class="auth-header">
+    <h1 class="auth-title">Регистрация участника</h1>
+    <p class="auth-subtitle">Создайте учетную запись, чтобы регистрировать чеки</p>
+  </div>
+
+  {% if form.errors %}
+  <div class="alert-error">
+    Пожалуйста, исправьте ошибки ниже:
+    <ul style="margin: 6px 0 0 16px; padding: 0;">
+      {% for field, errors in form.errors.items %}
+        {% for error in errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <form method="post" action="{% url 'accounts:register' %}" class="auth-form">
+    {% csrf_token %}
+    <div class="form-group" style="margin-bottom: 0;">
+      <label class="form-label" for="id_username">Логин</label>
+      <div class="input-wrapper">
+        <input type="text" name="username" id="id_username" class="form-input" placeholder="Придумайте логин" required autofocus autocomplete="username" value="{{ form.username.value|default:'' }}">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 0;">
+      <label class="form-label" for="id_email">Email</label>
+      <div class="input-wrapper">
+        <input type="email" name="email" id="id_email" class="form-input" placeholder="example@mail.ru" autocomplete="email" value="{{ form.email.value|default:'' }}">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 0;">
+      <label class="form-label" for="id_password1">Пароль</label>
+      <div class="input-wrapper">
+        <input type="password" name="password1" id="id_password1" class="form-input" placeholder="••••••••" required autocomplete="new-password">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 0;">
+      <label class="form-label" for="id_password2">Подтверждение пароля</label>
+      <div class="input-wrapper">
+        <input type="password" name="password2" id="id_password2" class="form-input" placeholder="••••••••" required autocomplete="new-password">
+      </div>
+    </div>
+
+    <button type="submit" class="btn-submit-upload" style="margin-top: 8px;">
+      Зарегистрироваться
+    </button>
+  </form>
+
+  <div class="auth-footer">
+    Уже зарегистрированы? <a href="{% url 'accounts:login' %}">Войти в кабинет</a>
+  </div>
+</div>
+{% endblock %}

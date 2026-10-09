@@ -1,0 +1,16 @@
+{% load static %}
+<!-- ============================================== -->
+<!-- MODAL: Сообщение об успехе                      -->
+<!-- ============================================== -->
+<div class="modal-overlay" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successModalTitle">
+  <div class="modal-card modal-card--success">
+    <div class="success-icon-badge">
+      <img src="{% static 'icons/success-check.svg' %}" alt="Успех" width="32" height="32">
+    </div>
+    <h2 class="modal-title modal-title--success" id="successModalTitle">Ваш чек загружен!</h2>
+    <p class="modal-subtitle modal-subtitle--success" id="successModalSubtitle">
+      Чек успешно зарегистрирован и отправлен модератору на проверку.<br>Статус обновится в личном кабинете.
+    </p>
+    <button type="button" class="btn-to-main js-close-modal" id="successModalCloseBtn">В личный кабинет</button>
+  </div>
+</div>

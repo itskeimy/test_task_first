@@ -1,0 +1,469 @@
+@charset "UTF-8";
+
+/* --- Modals & Overlays --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 41, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Modal Dialog Box */
+.modal-card {
+  background: var(--color-bg-white);
+  border-radius: var(--radius-modal);
+  box-shadow: var(--shadow-modal);
+  position: relative;
+  width: 100%;
+  max-width: 494px;
+  padding: 40px 32px;
+  transform: translateY(16px) scale(0.98);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-overlay.active .modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: var(--transition-fast);
+  color: var(--color-text-muted);
+}
+
+.modal-close-btn:hover {
+  background: var(--color-bg-page);
+  color: var(--color-text-title);
+}
+
+.modal-close-btn img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Modal Header */
+.modal-header {
+  margin-bottom: 24px;
+}
+
+.modal-title {
+  font-family: var(--font-family-heading);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--color-text-title);
+  line-height: 1.2;
+}
+
+.modal-subtitle {
+  font-size: 16px;
+  color: var(--color-text-muted);
+  margin-top: 8px;
+}
+
+/* --- Registration Form --- */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: margin-bottom 0.2s ease;
+}
+
+.form-group.has-error {
+  margin-bottom: 28px; /* Reserves space so tooltip never overlaps next input border */
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-title);
+  margin-bottom: 8px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.form-input {
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-input);
+  background-clip: padding-box;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0 42px 0 16px;
+  font-size: 16px;
+  font-family: inherit;
+  color: var(--color-text-title);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.form-input::placeholder {
+  color: var(--color-text-placeholder);
+  font-weight: 500;
+}
+
+.form-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(82, 79, 229, 0.15);
+}
+
+/* Clear icon button matching Figma 24x24 circle at right */
+.input-clear-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #F0F3F7;
+  border: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #787E91;
+  font-size: 14px;
+  line-height: 1;
+  transition: var(--transition-fast);
+  z-index: 2;
+}
+
+.input-clear-btn:hover {
+  background: #E2E8F0;
+  color: #182033;
+}
+
+.input-wrapper.has-value .input-clear-btn {
+  display: flex;
+}
+
+/* Calendar icon inside input */
+.input-icon-right {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  width: 18px;
+  height: 18px;
+  opacity: 0.7;
+}
+
+/* Red asterisk inside input at top right matching Figma 2001:3642 */
+.input-star {
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  color: #ED4A4A;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  display: none;
+  z-index: 3;
+}
+
+.form-group.has-error .input-star {
+  display: block;
+}
+
+/* --- Input Error State (Matching Figma Input 1600px / 2001:3632) --- */
+.form-group.has-error .form-input {
+  border-color: var(--status-error-text);
+  color: var(--status-error-text);
+}
+
+.form-group.has-error .form-input:focus {
+  border-color: var(--status-error-text);
+  box-shadow: 0 0 0 3px rgba(240, 77, 77, 0.15);
+}
+
+.form-group.has-error .form-input::placeholder {
+  color: var(--status-error-text);
+}
+
+/* Tooltip speech bubble matching Figma Frame 2087328440 */
+.error-tooltip {
+  position: absolute;
+  top: calc(100% - 1px); /* Connects directly to bottom border without gap */
+  left: 12px;
+  background: var(--color-bg-white);
+  border: 1px solid var(--status-error-text);
+  border-radius: 8px;
+  height: 34px;
+  box-sizing: border-box;
+  padding: 0 12px 0 10px;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--status-error-text);
+  box-shadow: 0 4px 6px rgba(235, 239, 245, 1.0);
+  z-index: 10;
+  white-space: nowrap;
+  animation: fadeInDown 0.15s ease forwards;
+}
+
+.error-tooltip::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 14px;
+  width: 10px;
+  height: 10px;
+  background: var(--color-bg-white);
+  border-left: 1px solid var(--status-error-text);
+  border-top: 1px solid var(--status-error-text);
+  transform: rotate(45deg);
+}
+
+.form-group.has-error .error-tooltip {
+  display: flex;
+}
+
+.error-tooltip img,
+.error-tooltip svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Submit Button */
+.btn-submit-upload {
+  width: 100%;
+  height: 48px;
+  background: var(--color-primary);
+  color: #FFFFFF;
+  border-radius: var(--radius-input);
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 8px;
+  transition: var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(82, 79, 229, 0.2);
+}
+
+.btn-submit-upload:hover {
+  background: var(--color-primary-hover);
+  box-shadow: 0 6px 16px rgba(82, 79, 229, 0.3);
+}
+
+.btn-submit-upload:active {
+  background: var(--color-primary-active);
+}
+
+/* --- Success Modal (Frame 2001:3556) --- */
+.modal-card--success {
+  max-width: 580px;
+  padding: 48px 40px;
+  text-align: center;
+  align-items: center;
+}
+
+.success-icon-badge {
+  width: 72px;
+  height: 72px;
+  border: 2.5px solid var(--status-success-text);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.success-icon-badge img {
+  width: 32px;
+  height: 32px;
+}
+
+.modal-title--success {
+  font-family: var(--font-family-heading);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--color-text-title);
+  margin-bottom: 12px;
+}
+
+.modal-subtitle--success {
+  font-size: 18px;
+  color: var(--color-text-muted);
+  max-width: 440px;
+  margin: 0 auto 32px;
+  line-height: 1.5;
+}
+
+.btn-to-main {
+  height: 56px;
+  padding: 0 48px;
+  background: var(--color-primary);
+  color: #FFFFFF;
+  border-radius: var(--radius-btn);
+  font-size: 16px;
+  font-weight: 600;
+  transition: var(--transition-fast);
+  box-shadow: 0 4px 16px rgba(82, 79, 229, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-to-main:hover {
+  background: var(--color-primary-hover);
+  box-shadow: 0 6px 20px rgba(82, 79, 229, 0.35);
+}
+
+/* Standalone Modal Page Wrapper (for modal-register.html & modal-success.html) */
+.standalone-modal-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: var(--color-bg-page);
+}
+
+.standalone-modal-page .modal-card {
+  position: static;
+  transform: none;
+  box-shadow: var(--shadow-modal);
+}
+
+/* --- Mobile Responsiveness for Modals --- */
+@media (max-width: 600px) {
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal-card {
+    border-radius: 24px 24px 0 0;
+    max-width: 100%;
+    width: 100%;
+    padding: 28px 20px 36px;
+    max-height: 92vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+  }
+
+  .modal-overlay.active .modal-card,
+  .modal-overlay.always-open .modal-card {
+    transform: translateY(0);
+  }
+
+  .modal-close-btn {
+    top: 20px;
+    right: 18px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .modal-title {
+    font-size: 24px;
+  }
+
+  .modal-subtitle {
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  .register-form {
+    gap: 14px;
+  }
+
+  .form-input {
+    height: 48px;
+    font-size: 16px; /* Prevents auto-zoom in iOS Safari */
+    border-radius: 10px;
+  }
+
+  .error-tooltip {
+    position: static;
+    margin-top: 6px;
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .error-tooltip::before {
+    display: none;
+  }
+
+  .btn-submit-upload {
+    height: 50px;
+    font-size: 16px;
+    border-radius: 12px;
+    margin-top: 10px;
+  }
+
+  /* Success Modal Mobile */
+  .modal-card--success {
+    border-radius: 24px 24px 0 0;
+    padding: 36px 20px 40px;
+  }
+
+  .success-icon-badge {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    margin-bottom: 18px;
+  }
+
+  .success-icon-badge img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .modal-title--success {
+    font-size: 24px;
+  }
+
+  .modal-subtitle--success {
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+
+  .btn-to-main {
+    width: 100%;
+    height: 50px;
+    padding: 0 20px;
+    border-radius: 12px;
+  }
+}
+
