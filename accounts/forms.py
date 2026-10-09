@@ -8,6 +8,7 @@ class CustomUserCreationForm(UserCreationForm):
     """
     Стандартная форма регистрации Django, привязанная к нашей кастомной модели User.
     """
+
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'email')
+        fields = ("username", "email")

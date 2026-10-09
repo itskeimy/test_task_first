@@ -20,4 +20,35 @@ package = false
 [dependency-groups]
 dev = [
     "django-stubs>=6.1.2",
+    "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "pytest-django>=4.14.0",
+    "ruff>=0.16.10",
 ]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py", "*_test.py", "tests.py"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+exclude = [
+    ".git",
+    ".venv",
+    "**/migrations/**",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = [
+    "RUF012",
+    "BLE001",
+    "DTZ005",
+]
+
+[tool.pyright]
+include = ["accounts", "receipts", "config"]
+exclude = ["**/migrations/**", ".venv"]
+reportAttributeAccessIssue = false
+reportIncompatibleVariableOverride = false
