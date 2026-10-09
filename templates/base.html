@@ -25,7 +25,7 @@
 
       <!-- Center Navigation -->
       <nav class="header-nav" aria-label="Основная навигация">
-        <a href="{% url 'receipts:cabinet' %}" class="nav-item active">
+        <a href="{% url 'receipts:cabinet' %}" class="nav-item {% if request.resolver_match.url_name == 'cabinet' %}active{% endif %}">
           <img src="{% static 'icons/nav-home.svg' %}" alt="" width="16" height="16">
           <span>Личный кабинет</span>
         </a>
@@ -45,7 +45,7 @@
       <div class="header-right">
         <button type="button" class="notification-btn" aria-label="Уведомления">
           <img src="{% static 'icons/bell.svg' %}" alt="Колокольчик" width="20" height="20">
-          <span class="notification-dot"></span>
+          {% if user.is_authenticated %}<span class="notification-dot"></span>{% endif %}
         </button>
 
         {% if user.is_authenticated %}
@@ -81,9 +81,9 @@
           </div>
         </div>
         {% else %}
-        <div style="display: flex; gap: 8px;">
-          <a href="{% url 'accounts:login' %}" class="btn-submit-upload" style="padding: 8px 16px; font-size: 14px; text-decoration: none;">Войти</a>
-          <a href="{% url 'accounts:register' %}" class="btn-to-main" style="padding: 8px 16px; font-size: 14px; text-decoration: none;">Регистрация</a>
+        <div class="header-auth">
+          <a href="{% url 'accounts:login' %}" class="header-auth__btn header-auth__btn--login">Войти</a>
+          <a href="{% url 'accounts:register' %}" class="header-auth__btn header-auth__btn--register">Регистрация</a>
         </div>
         {% endif %}
       </div>
