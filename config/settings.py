@@ -37,6 +37,20 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [host.strip() for host in os.environ.get('ALLOWED_HOSTS', '*').split(',') if host.strip()]
 
+# CSRF & Reverse Proxy Configuration 
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        'CSRF_TRUSTED_ORIGINS',
+        'https://keimy-test-task.duckdns.org,https://*.duckdns.org,http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:8099,http://localhost:8099'
+    ).split(',')
+    if origin.strip()
+]
+
+# Trust X-Forwarded-Proto header from reverse proxy (Caddy / Nginx) to detect HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
 
 # Application definition
 
