@@ -88,6 +88,9 @@
   font-weight: inherit;
   cursor: pointer;
   transition: var(--transition-fast);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .th-sort-btn:hover {
@@ -256,6 +259,9 @@
   font-weight: 500;
   color: var(--color-text-main);
   transition: var(--transition-fast);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .page-btn:hover {
@@ -281,6 +287,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .page-arrow img {
@@ -333,6 +341,9 @@
   transition: var(--transition-fast);
   box-shadow: 0 4px 16px rgba(82, 79, 229, 0.25);
   cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .btn-primary-register:hover {

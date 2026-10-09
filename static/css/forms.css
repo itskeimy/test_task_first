@@ -74,6 +74,9 @@
   line-height: 1;
   transition: var(--transition-fast);
   z-index: 2;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .input-clear-btn:hover {

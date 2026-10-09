@@ -53,6 +53,9 @@
   border-radius: 8px;
   transition: var(--transition-fast);
   color: var(--color-text-muted);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .modal-close-btn:hover {
@@ -283,6 +286,9 @@
   margin-top: 8px;
   transition: var(--transition-fast);
   box-shadow: 0 4px 12px rgba(82, 79, 229, 0.2);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .btn-submit-upload:hover {
@@ -347,6 +353,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .btn-to-main:hover {

@@ -54,6 +54,9 @@
   box-shadow: 0 4px 12px rgba(82, 79, 229, 0.2);
   margin-top: 8px;
   text-decoration: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .btn-auth-submit:hover {
@@ -77,6 +80,8 @@
   color: var(--color-brand);
   font-weight: 600;
   text-decoration: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .auth-footer a:hover {

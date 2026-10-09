@@ -46,6 +46,9 @@
   transition: var(--transition-fast);
   padding: 6px 10px;
   border-radius: 8px;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .header-back-link:hover {
@@ -81,6 +84,9 @@
   text-decoration: none;
   box-sizing: border-box;
   transition: var(--transition-fast);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .nav-item:hover {
@@ -115,6 +121,9 @@
   align-items: center;
   justify-content: center;
   transition: var(--transition-fast);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .notification-btn:hover {
@@ -158,6 +167,9 @@
   box-sizing: border-box;
   transition: all var(--transition-fast);
   cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .header-auth__btn--login {
@@ -205,6 +217,9 @@
   border-radius: 12px;
   transition: var(--transition-fast);
   position: relative;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .user-profile:hover {
@@ -289,6 +304,8 @@
   font-size: 15px;
   color: var(--color-text-main);
   transition: var(--transition-fast);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .dropdown-item:hover {
