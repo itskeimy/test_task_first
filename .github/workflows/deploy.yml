@@ -99,10 +99,11 @@ jobs:
             export IMAGE_NAME="$IMAGE_NAME"
 
             # Pull images
-            docker compose pull web nginx
+            docker compose pull
 
             # Restart services with Nginx bound to 127.0.0.1:8099
-            docker compose up -d --remove-orphans nginx web
+            docker compose up -d --remove-orphans
+            docker compose restart nginx
 
             # Prune dangling/unused docker images on VPS to save disk space
             docker image prune -f

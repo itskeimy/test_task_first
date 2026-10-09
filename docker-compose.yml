@@ -23,6 +23,14 @@ services:
       - ALLOWED_HOSTS=*
       - DEBUG=False
       - PYTHONUNBUFFERED=1
+      - DB_NAME=${DB_NAME:-test_task_db}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres_password}
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
       - app_data:/app/data
       - django_static:/app/staticfiles
@@ -33,13 +41,19 @@ services:
     container_name: test_task_first_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: test_task_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: ${DB_NAME:-test_task_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres_password}
     ports:
       - "${DB_PORT:-8195}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-test_task_db}"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+      start_period: 3s
 
 volumes:
   postgres_data:
