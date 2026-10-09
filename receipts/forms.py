@@ -4,6 +4,7 @@ from django import forms
 from django.conf import settings
 from django.utils import timezone
 from .models import Receipt
+from .utils import get_promo_config
 
 
 class ReceiptCreateForm(forms.ModelForm):
@@ -66,10 +67,10 @@ class ReceiptCreateForm(forms.ModelForm):
             except Exception:
                 raise forms.ValidationError('Введите корректную сумму чека (например, 1000.00).')
 
-        min_amount = Decimal(str(getattr(settings, 'MIN_AMOUNT', '1000.00')))
-        if amount < min_amount:
+        promo = get_promo_config()
+        if amount < promo['min_amount']:
             raise forms.ValidationError(
-                f'Сумма чека для участия в акции должна быть не менее {min_amount} ₽.'
+                f'Сумма чека для участия в акции должна быть не менее {promo["min_amount"]} ₽.'
             )
         return amount
 
@@ -83,30 +84,18 @@ class ReceiptCreateForm(forms.ModelForm):
         if purchase_date > now:
             raise forms.ValidationError('Дата покупки не может быть в будущем.')
 
-        # Считываем строки дат из настроек и преобразуем в datetime
-        start_str = getattr(settings, 'PROMO_START_DATE', None)
-        end_str = getattr(settings, 'PROMO_END_DATE', None)
+        promo = get_promo_config()
+        if promo['start_dt'] and promo['end_dt']:
+            check_date = purchase_date
+            if not timezone.is_aware(check_date):
+                tz = timezone.get_current_timezone()
+                check_date = timezone.make_aware(check_date, tz)
 
-        if start_str and end_str:
-            try:
-                start_date = datetime.fromisoformat(start_str)
-                end_date = datetime.fromisoformat(end_str)
-
-                # Согласовываем таймзоны (если purchase_date с часовым поясом)
-                if timezone.is_aware(purchase_date):
-                    tz = timezone.get_current_timezone()
-                    if timezone.is_naive(start_date):
-                        start_date = timezone.make_aware(start_date, tz)
-                    if timezone.is_naive(end_date):
-                        end_date = timezone.make_aware(end_date, tz)
-
-                if not (start_date <= purchase_date <= end_date):
-                    raise forms.ValidationError(
-                        f'Чек должен быть оформлен в период акции '
-                        f'(с {start_date.strftime("%d.%m.%Y")} по {end_date.strftime("%d.%m.%Y")}).'
-                    )
-            except ValueError:
-                pass
+            if not (promo['start_dt'] <= check_date <= promo['end_dt']):
+                raise forms.ValidationError(
+                    f'Чек должен быть оформлен в период акции '
+                    f'(с {promo["start_display"]} по {promo["end_display"]}).'
+                )
 
         return purchase_date
 
