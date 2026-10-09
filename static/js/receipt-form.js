@@ -286,9 +286,9 @@ function validateReceiptField(input) {
         if (!/^\d+$/.test(cleanVal)) {
           isValid = false;
           errorMsg = 'Ошибка! ФП должен содержать только цифры';
-        } else if (cleanVal.length < 4 || cleanVal.length > 10) {
+        } else if (cleanVal.length < 1 || cleanVal.length > 10) {
           isValid = false;
-          errorMsg = 'Ошибка! ФП должен содержать от 4 до 10 цифр';
+          errorMsg = 'Ошибка! ФП должен содержать от 1 до 10 цифр';
         }
         break;
       }
@@ -322,6 +322,20 @@ function validateReceiptField(input) {
             } else if (dateObj > new Date(Date.now() + 9 * 3600 * 1000)) {
               isValid = false;
               errorMsg = 'Ошибка! Дата чека не может быть в будущем';
+            } else {
+              const formEl = input.closest('form') || document.getElementById('receiptForm');
+              const pStartStr = formEl?.dataset?.promoStart;
+              const pEndStr = formEl?.dataset?.promoEnd;
+              if (pStartStr && pEndStr) {
+                const pStart = new Date(pStartStr);
+                const pEnd = new Date(pEndStr);
+                const startDay = new Date(pStart.getFullYear(), pStart.getMonth(), pStart.getDate());
+                const endDay = new Date(pEnd.getFullYear(), pEnd.getMonth(), pEnd.getDate(), 23, 59, 59, 999);
+                if (dateObj < startDay || dateObj > endDay) {
+                  isValid = false;
+                  errorMsg = 'Ошибка! Чек должен быть оформлен в период акции';
+                }
+              }
             }
           }
         }
@@ -331,12 +345,15 @@ function validateReceiptField(input) {
       case 'inputSum': {
         const cleanVal = rawValue.replace(/\s/g, '').replace('₽', '').replace(',', '.');
         const num = parseFloat(cleanVal);
+        const formEl = input.closest('form') || document.getElementById('receiptForm');
+        const minAmount = formEl?.dataset?.minAmount ? parseFloat(formEl.dataset.minAmount) : 1000.0;
+
         if (isNaN(num) || !/^\d+(\.\d{1,2})?$/.test(cleanVal)) {
           isValid = false;
           errorMsg = 'Ошибка! Введите корректную сумму';
-        } else if (num <= 0) {
+        } else if (num < minAmount) {
           isValid = false;
-          errorMsg = 'Ошибка! Сумма должна быть больше 0';
+          errorMsg = `Ошибка! Сумма чека должна быть не менее ${minAmount} ₽`;
         } else if (num > 100000000) {
           isValid = false;
           errorMsg = 'Ошибка! Сумма не может превышать 100 000 000 ₽';

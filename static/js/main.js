@@ -10,4 +10,5 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initQrCodeParser === 'function') initQrCodeParser();
   if (typeof initReceiptForm === 'function') initReceiptForm();
   if (typeof initTableSorting === 'function') initTableSorting();
+  if (typeof initAuthFormValidation === 'function') initAuthFormValidation();
 });

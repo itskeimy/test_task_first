@@ -131,3 +131,50 @@
   border-color: var(--status-error-text);
   box-shadow: 0 0 0 3px rgba(240, 77, 77, 0.15);
 }
+
+/* Tooltip speech bubble matching Figma Frame 2087328440 */
+.error-tooltip {
+  position: absolute;
+  top: calc(100% - 1px);
+  left: 12px;
+  background: var(--color-bg-white);
+  border: 1px solid var(--status-error-text);
+  border-radius: 8px;
+  height: 34px;
+  box-sizing: border-box;
+  padding: 0 12px 0 10px;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--status-error-text);
+  box-shadow: 0 4px 6px rgba(235, 239, 245, 1.0);
+  z-index: 10;
+  white-space: nowrap;
+  animation: fadeInDown 0.15s ease forwards;
+}
+
+.error-tooltip::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 14px;
+  width: 10px;
+  height: 10px;
+  background: var(--color-bg-white);
+  border-left: 1px solid var(--status-error-text);
+  border-top: 1px solid var(--status-error-text);
+  transform: rotate(45deg);
+}
+
+.form-group.has-error .error-tooltip {
+  display: flex;
+}
+
+.error-tooltip img,
+.error-tooltip svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
