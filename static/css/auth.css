@@ -85,7 +85,7 @@
 
 @media (max-width: 600px) {
   .auth-card {
-    margin: 16px auto;
+    margin: auto;
     padding: 24px 18px;
     border-radius: 20px;
   }

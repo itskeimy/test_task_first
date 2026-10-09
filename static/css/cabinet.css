@@ -601,11 +601,11 @@
 
   /* Empty State Mobile */
   .empty-state {
-    padding: 36px 12px;
-    gap: 14px;
+    padding: 20px 12px;
+    gap: 12px;
   }
   .empty-state__image {
-    max-width: 180px;
+    max-width: 140px;
   }
   .empty-state__title {
     font-size: 20px;
