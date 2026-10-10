@@ -194,6 +194,67 @@
   opacity: 0.7;
 }
 
+/* Interactive Calendar Button & Date Picker */
+.input-wrapper--date .form-input {
+  padding-right: 74px;
+}
+
+.input-calendar-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #787E91;
+  transition: var(--transition-fast, 0.15s ease);
+  z-index: 3;
+  padding: 0;
+}
+
+.input-calendar-btn:hover {
+  background: #F0F3F7;
+  color: var(--color-primary, #524FE5);
+}
+
+.input-calendar-btn:focus-visible {
+  outline: 2px solid var(--color-primary, #524FE5);
+  outline-offset: 1px;
+}
+
+.input-calendar-btn img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.input-wrapper--date.has-value .input-clear-btn {
+  right: 42px;
+  display: flex;
+}
+
+.visually-hidden-picker {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  opacity: 0;
+  pointer-events: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  z-index: 1;
+}
+
 /* Red asterisk inside input at top right matching Figma 2001:3642 */
 .input-star {
   position: absolute;
@@ -482,6 +543,130 @@
     height: 50px;
     padding: 0 20px;
     border-radius: 12px;
+  }
+}
+
+/* ==========================================================================
+   QR Code Photo Upload & Drop Zone
+   ========================================================================== */
+.qr-upload-card {
+  background: var(--color-bg-subtle, #F8FAFC);
+  border: 1px dashed #CBD5E1;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+  transition: border-color var(--transition-fast, 0.15s ease), background-color var(--transition-fast, 0.15s ease);
+}
+
+.qr-upload-card.drag-over {
+  border-color: var(--color-primary, #524FE5);
+  background-color: var(--color-primary-light, #EEEDFD);
+}
+
+.qr-drop-zone {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.qr-drop-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-qr-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  min-height: 38px;
+  font-family: var(--font-family-base, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary, #524FE5);
+  background: var(--color-primary-light, #EEEDFD);
+  border: 1px solid rgba(82, 79, 229, 0.25);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.btn-qr-upload:hover {
+  background: var(--color-primary, #524FE5);
+  color: #FFFFFF;
+}
+
+.btn-qr-upload:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.qr-drop-hint {
+  font-size: 12px;
+  color: var(--color-text-muted, #787E91);
+}
+
+.qr-status-badge {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  line-height: 1.4;
+  margin-top: 4px;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.qr-status-badge.loading {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+}
+
+.qr-status-badge.success {
+  background: var(--status-success-bg, rgba(55, 204, 25, 0.12));
+  color: #15803D;
+  border: 1px solid rgba(55, 204, 25, 0.3);
+}
+
+.qr-status-badge.error {
+  background: var(--status-error-bg, rgba(239, 76, 76, 0.12));
+  color: #B91C1C;
+  border: 1px solid rgba(239, 76, 76, 0.3);
+}
+
+/* Mobile responsive rules for QR card and Date picker */
+@media (max-width: 640px) {
+  .qr-drop-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .btn-qr-upload {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  .qr-drop-hint {
+    text-align: center;
+  }
+
+  .input-calendar-btn {
+    width: 36px;
+    height: 36px;
+    right: 8px;
+  }
+
+  .input-wrapper--date .form-input {
+    padding-right: 76px;
+  }
+
+  .input-wrapper--date.has-value .input-clear-btn {
+    right: 44px;
   }
 }
 

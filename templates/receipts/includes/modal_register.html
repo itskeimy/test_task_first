@@ -19,17 +19,40 @@
     <!-- Общий баннер серверной ошибки -->
     <div id="formGeneralError" style="display:none; padding:10px 14px; background:#FEE2E2; color:#991B1B; border:1px solid #F87171; border-radius:10px; font-size:13px; margin-bottom:16px;"></div>
 
-    <!-- Бонусное поле: Вставить строку из QR-кода -->
-    <div class="form-group" style="background:#F8FAFC; border:1px dashed #CBD5E1; border-radius:12px; padding:12px; margin-bottom:16px;">
-      <label class="form-label" for="inputQRString" style="color:#475569; font-weight:600; display:flex; align-items:center; gap:6px;">
-        <img src="{% static 'images/qr-code.png' %}" alt="QR" width="16" height="16">
-        <span>Быстрое заполнение: вставьте строку из QR-кода</span>
-      </label>
-      <div class="input-wrapper">
+    <!-- Быстрое заполнение: Загрузка фото или ввод строки QR-кода -->
+    <div class="form-group qr-upload-card" id="qrUploadBox">
+      <div class="qr-upload-header">
+        <label class="form-label" for="inputQRString" style="color:#475569; font-weight:600; display:flex; align-items:center; gap:6px; margin-bottom:0;">
+          <img src="{% static 'images/qr-code.png' %}" alt="QR" width="16" height="16">
+          <span>Быстрое заполнение: фото или строка QR-кода</span>
+        </label>
+      </div>
+
+      <!-- Зона загрузки фото чека с QR-кодом -->
+      <div class="qr-drop-zone" id="qrDropZone">
+        <input type="file" id="inputQRFile" accept="image/*" class="qr-file-input" style="display:none;">
+        <div class="qr-drop-content">
+          <button type="button" class="btn-qr-upload" id="qrUploadBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Загрузить фото чека</span>
+          </button>
+          <span class="qr-drop-hint">или перетащите фото / Ctrl+V</span>
+        </div>
+        <div id="qrScanStatus" class="qr-status-badge" style="display:none;"></div>
+      </div>
+
+      <!-- Текстовое поле для строки QR-кода -->
+      <div class="input-wrapper" style="margin-top: 8px;">
         <input type="text" id="inputQRString" class="form-input" placeholder="t=20261015T1430&s=1550.00&fn=9999078900012345&i=12345&fp=9876543210..." autocomplete="off">
         <button type="button" class="input-clear-btn" aria-label="Очистить поле">×</button>
       </div>
-      <div style="font-size:11px; color:#64748B; margin-top:4px;">Вставьте строку из сканера камеры смартфона — поля ниже заполнятся автоматически!</div>
+      <div style="font-size:11px; color:#64748B; margin-top:4px;">
+        Загрузите фото чека с QR-кодом или вставьте строку сканера — поля ниже заполнятся автоматически!
+      </div>
     </div>
 
     <form class="register-form" id="receiptForm" action="{% url 'receipts:register' %}" method="post" novalidate
@@ -83,9 +106,12 @@
       <!-- Дата покупки -->
       <div class="form-group">
         <label class="form-label" for="inputDate">Дата покупки</label>
-        <div class="input-wrapper">
+        <div class="input-wrapper input-wrapper--date">
           <input type="text" name="purchase_date" id="inputDate" class="form-input" placeholder="дд.мм.гггг чч:мм" required maxlength="16" autocomplete="off">
-          <img src="{% static 'icons/icon-calendar.svg' %}" alt="Календарь" class="input-icon-right" width="18" height="18">
+          <input type="datetime-local" id="hiddenDatePicker" class="visually-hidden-picker" tabindex="-1" aria-hidden="true">
+          <button type="button" class="input-calendar-btn" id="btnOpenCalendar" aria-label="Выбрать дату в календаре" title="Выбрать дату в календаре">
+            <img src="{% static 'icons/icon-calendar.svg' %}" alt="Календарь" width="18" height="18">
+          </button>
           <button type="button" class="input-clear-btn" aria-label="Очистить поле">×</button>
           <span class="input-star">*</span>
         </div>

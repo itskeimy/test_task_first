@@ -46,7 +46,62 @@ function initReceiptForm() {
       if (v.length >= 11) formatted += ':' + v.slice(10, 12);
       e.target.value = formatted;
     });
+
+    const hiddenPicker = document.getElementById('hiddenDatePicker');
+    const calendarBtn = document.getElementById('btnOpenCalendar');
+
+    if (hiddenPicker) {
+      const pad = (n) => String(n).padStart(2, '0');
+
+      const syncHiddenPicker = () => {
+        const val = dateInput.value.trim();
+        const match = val.match(/^(\d{2})\.(\d{2})\.(\d{4})(?:\s+(\d{2}):(\d{2}))?$/);
+        if (match) {
+          const [, d, m, y, h, min] = match;
+          hiddenPicker.value = `${y}-${m}-${d}T${h || '12'}:${min || '00'}`;
+        } else {
+          const now = new Date();
+          hiddenPicker.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+        }
+      };
+
+      const promoStart = form.dataset.promoStart;
+      const promoEnd = form.dataset.promoEnd;
+      if (promoStart) hiddenPicker.min = promoStart.slice(0, 16);
+      if (promoEnd) hiddenPicker.max = promoEnd.slice(0, 16);
+
+      const openCalendarPicker = () => {
+        syncHiddenPicker();
+        if (typeof hiddenPicker.showPicker === 'function') {
+          try {
+            hiddenPicker.showPicker();
+            return;
+          } catch (_) {}
+        }
+        hiddenPicker.focus();
+        hiddenPicker.click();
+      };
+
+      if (calendarBtn) {
+        calendarBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          openCalendarPicker();
+        });
+      }
+
+      hiddenPicker.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (!val) return;
+        const [datePart, timePart] = val.split('T');
+        const [y, m, d] = datePart.split('-');
+        const time = timePart ? timePart.slice(0, 5) : '12:00';
+        dateInput.value = `${d}.${m}.${y} ${time}`;
+        dateInput.dispatchEvent(new Event('input', { bubbles: true }));
+        dateInput.dispatchEvent(new Event('blur', { bubbles: true }));
+      });
+    }
   }
+
 
   if (sumInput) {
     sumInput.addEventListener('focus', (e) => {
